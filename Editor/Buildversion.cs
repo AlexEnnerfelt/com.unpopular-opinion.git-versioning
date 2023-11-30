@@ -3,16 +3,30 @@ Copyright (c) 2016 RedBlueGames
 */
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
-using UnityEditor.Build;
-using UnityEditor.Build.Reporting;
-using UnityEngine;
 
 
 namespace Ennerfelt.GitVersioning {
-	public class BuildVersion : IPreprocessBuildWithReport, IPostprocessBuildWithReport {
+	public class BuildVersion {
 		public int callbackOrder => 0;
-		private string _previousBuildVersion;
+		public static string[] excludeBranches = new string[] {
+			"develop","main","master"
+		};
+
+
+		public static string GetBuildVersion(BuildTarget target, bool includeBranch = false) {
+			var version = Git.BuildVersion;
+			version += $"-{TargetVersionCode[target]}";
+
+			var branch = Git.Branch;
+			if (includeBranch && !excludeBranches.Contains(branch)) {
+				version += $" : {branch}";
+			}
+			return version;
+		}
+
 
 		public static bool AreVersionsMatching() {
 			var v = PlayerSettings.bundleVersion;
@@ -31,48 +45,16 @@ namespace Ennerfelt.GitVersioning {
 			}
 		}
 
-		public void OnPostprocessBuild(BuildReport report) {
-			Debug.Log(PlayerSettings.bundleVersion);
-		}
+		private static readonly Dictionary<BuildTarget, string> TargetVersionCode = new() {
+			{BuildTarget.StandaloneOSX, "OSX" },
+			{BuildTarget.StandaloneWindows, "Win-32" },
+			{BuildTarget.StandaloneWindows64, "Win-64" },
+			{BuildTarget.StandaloneLinux64, "Linux" },
+			{BuildTarget.PS4, "PS4" },
+			{BuildTarget.XboxOne, "XboxOne" },
+			{BuildTarget.Switch, "Switch" },
+			{BuildTarget.GameCoreXboxOne, "GCXboxOne" },
+		};
 
-		public void OnPreprocessBuild(BuildReport report) {
-			var build = GetBuildNumber();
-			if (build.HasValue) {
-				if (AreVersionsMatching()) {
-					build = 0;
-				} else {
-					build++;
-				}
-				PlayerSettings.bundleVersion = $"{Git.BuildVersion} {GetOS()}-b{build}";
-			} else {
-				PlayerSettings.bundleVersion = $"{Git.BuildVersion} {GetOS()}";
-			}
-		}
-		private string GetOS() {
-			var os = EditorUserBuildSettings.activeBuildTarget;
-
-			switch (os) {
-				case BuildTarget.StandaloneOSX:
-					return "OSX";
-				case BuildTarget.StandaloneWindows:
-					return "Win-32";
-				case BuildTarget.StandaloneWindows64:
-					return "Win-64";
-				case BuildTarget.WSAPlayer:
-					return "Wsa";
-				case BuildTarget.StandaloneLinux64:
-					return "Linux";
-				case BuildTarget.PS4:
-					return "PS4";
-				case BuildTarget.XboxOne:
-					return "XboxOne";
-				case BuildTarget.Switch:
-					return "Switch";
-				case BuildTarget.GameCoreXboxOne:
-					return "GCXboxOne";
-				default:
-					return string.Empty;
-			}
-		}
 	}
 }
