@@ -10,39 +10,34 @@ using UnityEditor;
 
 namespace Ennerfelt.GitVersioning {
 	public class BuildVersion {
-		public int callbackOrder => 0;
 		public static string[] excludeBranches = new string[] {
-			"develop","main","master"
+			"develop","main","master", "HEAD"
 		};
 
-
-		public static string GetBuildVersion(BuildTarget target, bool includeBranch = false) {
+		public static string GetSemanticVersion() {
 			var version = Git.BuildVersion;
-			version += $"-{TargetVersionCode[target]}";
-
-			var branch = Git.Branch;
-			if (includeBranch && !excludeBranches.Contains(branch)) {
-				version += $" : {branch}";
-			}
 			return version;
 		}
 
+		public static string GetBuildVersion(bool includeTarget = false, bool includeBranch = false, bool showAllBranches = false) {
+			var version = GetSemanticVersion();
 
-		public static bool AreVersionsMatching() {
-			var v = PlayerSettings.bundleVersion;
-			var current = v.Substring(0, v.LastIndexOf("-"));
-			var git = Git.BuildVersion;
-			return git == current;
-		}
-		public static int? GetBuildNumber() {
-			var v = PlayerSettings.bundleVersion;
-			try {
-				var b = v.Substring(v.LastIndexOf("b") + 1);
-				var result = Int32.Parse(b);
-				return result;
-			} catch (Exception) {
-				return null;
+			if (includeBranch) {
+				var branch = Git.Branch;
+				if (excludeBranches.Contains(branch)) {
+					if (showAllBranches) {
+						version += $" - {branch}";
+					}
+				} else {
+					version += $" - {branch}";
+				}
 			}
+
+			if (includeTarget) {
+				version += $" - {TargetVersionCode[EditorUserBuildSettings.activeBuildTarget]}";
+			}
+
+			return version;
 		}
 
 		private static readonly Dictionary<BuildTarget, string> TargetVersionCode = new() {
