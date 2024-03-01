@@ -1,7 +1,7 @@
 {
-  "name": "com.ennerfelt.git-versioning",
-  "version": "0.1.13",
-  "displayName": "GIT Versioning",
+  "name": "com.unpopular-opinion.git-versioning",
+  "version": "0.1.14",
+  "displayName": "Git Versioning",
   "unity": "2019.1",
   "unityRelease": "0b5",
   "documentationUrl": "",
@@ -11,13 +11,9 @@
     "Utility"
   ],
   "author": {
-    "name": "Alex Ennerfelt",
+    "name": "Unpopular Opinion",
     "email": "alex.ennerfelt@gmail.com",
     "url": "https://github.com/AlexEnnerfelt"
   },
-  "description": "",
-
-  "dependencies": {
-    
-  }
+  "description": "Automatically looks at the git history and assigns a version number in the Project Settings based on git tags and commit count"
 }
