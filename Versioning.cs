@@ -8,7 +8,7 @@ using UnityEngine;
 using System.Diagnostics;
 using System.Text;
 
-namespace Ennerfelt.GitVersioning
+namespace UnpopularOpinion.GitVersioning
 {
     /// <summary>
     /// GitException includes the error output from a Git.Run() command as well as the

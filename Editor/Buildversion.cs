@@ -8,7 +8,7 @@ using System.Linq;
 using UnityEditor;
 
 
-namespace Ennerfelt.GitVersioning {
+namespace UnpopularOpinion.GitVersioning {
 	public class BuildVersion {
 		public static string[] excludeBranches = new string[] {
 			"develop","main","master", "HEAD"
